@@ -15,7 +15,6 @@ class AppColors {
 }
 
 class AddPetScreen extends StatefulWidget {
-  //TODO : Transfer the data to Photos screen.
   @override
   _AddPetScreenState createState() => _AddPetScreenState();
 }
@@ -23,16 +22,14 @@ class AddPetScreen extends StatefulWidget {
 class _AddPetScreenState extends State<AddPetScreen> {
   final List<double> values = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5,15.0];
 
-  // Variables to store the user's answers for each question
-  String petGender = 'Male'; // Default option
-  int petAge = 1; // Default option
+  String petGender = 'Male';
+  int petAge = 1; 
   String petName = '';
   String size = '';
   int energyLevel = 1;
   String description = '';
   List<String> petPhotos = [];
 
-  // Controller for the text field
   final TextEditingController nameController = TextEditingController();
   final TextEditingController sizeController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
@@ -99,7 +96,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Welcome header
               Container(
                 padding: const EdgeInsets.all(20),
                 margin: const EdgeInsets.only(bottom: 24),
@@ -162,7 +158,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                 ),
               ),
 
-              // Pet details section
               _buildSectionCard(
                 title: 'פרטי החיה',
                 icon: Icons.pets,
@@ -177,7 +172,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
               const SizedBox(height: 20),
 
-              // Energy level section
               _buildSectionCard(
                 title: 'רמת אנרגיה',
                 icon: Icons.flash_on,
@@ -186,7 +180,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
               const SizedBox(height: 20),
 
-              // Age section
               _buildSectionCard(
                 title: 'גיל',
                 icon: Icons.cake,
@@ -195,7 +188,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
               const SizedBox(height: 20),
 
-              // Size selection
               _buildSectionCard(
                 title: 'גודל החיה',
                 icon: Icons.straighten,
@@ -213,7 +205,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
               const SizedBox(height: 32),
 
-              // Complete Button
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
@@ -263,7 +254,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
                           builder: (context) => AddPetPhotos(newPet: newPet)),
                     );
 
-                    // Navigate to the choose photo clicked.
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -423,7 +413,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
     );
   }
 
-  //Energy Slider
   Widget _buildEnergySlider() {
     return Column(
       children: [
@@ -685,7 +674,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
         ),
         child: Row(
           children: [
-            // Radio button
             Container(
               width: 24,
               height: 24,
@@ -707,7 +695,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
             ),
             const SizedBox(width: 12),
 
-            // Icon
             Icon(
               icon,
               color: isSelected ? AppColors.primaryBrown : AppColors.mediumGray,
@@ -715,7 +702,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
             ),
             const SizedBox(width: 8),
 
-            // Title
             Text(
               title,
               style: TextStyle(
