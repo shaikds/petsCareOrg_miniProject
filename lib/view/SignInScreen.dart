@@ -21,7 +21,6 @@ class _SignInScreenState extends State<SignInScreen> {
         password: password,
       );
       Navigator.pop(context);
-      // Handle successful login here (e.g., navigate to the next screen)
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
