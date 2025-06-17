@@ -15,7 +15,6 @@ class HomeScreen extends StatelessWidget {
   // final isFabVisible = true; //TODO : Erase it after release.
   HomeScreen({Key? key}) : super(key: key);
 
-  // Enhanced color scheme
   static const Color primaryBrown = Color(0xFF8D6E63);
   static const Color lightBrown = Color(0xFFBCAAA4);
   static const Color darkBrown = Color(0xFF5D4037);
@@ -156,7 +155,6 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Welcome header
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -218,7 +216,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // Pets grid
               Expanded(
                 child: pets.isEmpty
                     ? _buildEmptyState()
@@ -246,9 +243,7 @@ class HomeScreen extends StatelessWidget {
                             child: PetCard(
                               pet: pets[index],
                               onTap: () {
-                                // You can navigate to a details screen or perform any other action here
                                 print('Tapped on pet ${pets[index].name}');
-                                // Navigate to the PetDetailsScreen when the card is tapped
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -267,7 +262,6 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      //circular fab
       floatingActionButton: Visibility(
         visible: isFabVisible,
         child: Container(
@@ -288,7 +282,6 @@ class HomeScreen extends StatelessWidget {
           ),
           child: FloatingActionButton(
             onPressed: () {
-              // Navigate to the new screen when FAB is clicked.
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AddPetScreen()),
@@ -352,7 +345,6 @@ class HomeScreen extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to the PetRecommenderScreen when the button is clicked
                 Navigator.push(
                   context,
                   MaterialPageRoute(
