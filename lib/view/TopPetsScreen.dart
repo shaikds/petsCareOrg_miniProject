@@ -60,8 +60,8 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
   }
 
   Future<void> _loadData() async {
-    // Simulate loading data (replace with your actual data loading logic)
-    await Future.delayed(const Duration(seconds: 2));
+
+  await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isLoading = false;
@@ -212,7 +212,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Winners header
             Container(
               padding: const EdgeInsets.all(20),
               margin: const EdgeInsets.only(bottom: 30),
@@ -274,7 +273,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                 ],
               ),
             ),
-            // Winners podium
             if (widget.petOptions.length >= 3) _buildPodium(),
             if (widget.petOptions.length < 3) _buildSimpleList(),
           ],
@@ -286,7 +284,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
   Widget _buildPodium() {
     return SingleChildScrollView(child: Column(
       children: [
-        // First place (center, highest)
         _buildWinnerCard(
           pet: widget.petOptions[0],
           rank: 1,
@@ -298,7 +295,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
         ),
         const SizedBox(height: 20),
 
-              // Remove Expanded here!
               _buildWinnerCard(
                 pet: widget.petOptions[1],
                 rank: 2,
@@ -320,7 +316,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
         ),
 
 
-        // Additional pets if any
         if (widget.petOptions.length > 3) ...[
           const SizedBox(height: 30),
           Container(
@@ -442,13 +437,11 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Pet image
               Image.network(
                 pet.photos!.first,
                 fit: BoxFit.cover,
               ),
 
-              // Gradient overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -464,7 +457,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                 ),
               ),
 
-              // Rank badge (top left)
               Positioned(
                 top: 12,
                 left: 12,
@@ -503,7 +495,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                 ),
               ),
 
-              // Pet info (bottom)
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -514,7 +505,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Rank title
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
@@ -533,7 +523,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                       ),
                       const SizedBox(height: 8),
 
-                      // Pet name
                       Text(
                         pet.name,
                         style: const TextStyle(
@@ -545,7 +534,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                       ),
                       const SizedBox(height: 4),
 
-                      // Subtitle
                       Text(
                         subtitle,
                         style: TextStyle(
@@ -556,7 +544,6 @@ class _PetOptionsScreenState extends State<PetOptionsScreen>
                       ),
                       const SizedBox(height: 8),
 
-                      // Pet details
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
