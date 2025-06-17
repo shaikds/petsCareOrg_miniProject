@@ -27,8 +27,8 @@ class PetRecommenderScreen extends StatefulWidget {
 class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
   bool _isMale = false;
   bool _isFemale = false;
-  double _maxAge = 15.0; // Default maximum age preference
-  int _minEnergyLevel = 1; // Default minimum energy level preference
+  double _maxAge = 15.0; 
+  int _minEnergyLevel = 1;
   String _description = '';
   PetViewModel petViewModel = PetViewModel();
 
@@ -90,7 +90,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Welcome header
               Container(
                 padding: const EdgeInsets.all(20),
                 margin: const EdgeInsets.only(bottom: 24),
@@ -156,7 +155,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
                 ),
               ),
 
-              // Gender section
               _buildSectionCard(
                 title: 'מין',
                 icon: Icons.pets,
@@ -189,13 +187,11 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 20),
 
-              // Enhanced AI Search Mode Section
               _buildSectionCard(
                 title: 'סוג חיפוש חכם',
                 icon: Icons.psychology,
                 child: Column(
                   children: [
-                    // Description text
                     Container(
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.only(bottom: 16),
@@ -229,7 +225,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
                       ),
                     ),
 
-                    // Enhanced radio buttons
                     Column(
                       children: [
                         _buildEnhancedRadioOption(
@@ -272,7 +267,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 20),
 
-              // Size section placeholder
               _buildSectionCard(
                 title: 'גודל',
                 icon: Icons.straighten,
@@ -298,7 +292,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 20),
 
-              // Age section
               _buildSectionCard(
                 title: 'גיל מקסימלי',
                 icon: Icons.cake,
@@ -357,7 +350,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 20),
 
-              // Energy level section
               _buildSectionCard(
                 title: 'רמת אנרגיה מינימלית',
                 icon: Icons.flash_on,
@@ -430,7 +422,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 20),
 
-              // Description section
               _buildSectionCard(
                 title: 'תיאור החיה ופרטים נוספים',
                 icon: Icons.description,
@@ -490,7 +481,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
 
               const SizedBox(height: 32),
 
-              // Submit button
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
@@ -620,7 +610,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
           children: [
             Row(
               children: [
-                // Radio button
                 Container(
                   width: 24,
                   height: 24,
@@ -646,7 +635,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
                 ),
                 const SizedBox(width: 12),
 
-                // Icon
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -665,7 +653,6 @@ class _PetRecommenderScreenState extends State<PetRecommenderScreen> {
                 ),
                 const SizedBox(width: 12),
 
-                // Title and badges
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
