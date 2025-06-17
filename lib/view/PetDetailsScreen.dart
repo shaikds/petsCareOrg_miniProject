@@ -25,7 +25,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Enhanced color scheme
   static const Color primaryBrown = Color(0xFF8D6E63);
   static const Color lightBrown = Color(0xFFBCAAA4);
   static const Color darkBrown = Color(0xFF5D4037);
@@ -154,7 +153,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Enhanced image slider container
                     Container(
                       height: 220,
                       decoration: BoxDecoration(
@@ -173,7 +171,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Pet description card
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -200,7 +197,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Pet details card
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -246,7 +242,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Form container
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
