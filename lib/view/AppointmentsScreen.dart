@@ -44,10 +44,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   Future<void> _loadAppointments() async {
-    // Simulate loading data - replace with your actual data loading logic
     await Future.delayed(const Duration(seconds: 2));
 
-    // Sample data - replace with your actual data source
+    // Mock Data
     setState(() {
       appointments = [
         Appointment(
@@ -257,7 +256,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       ),
       child: Column(
         children: [
-          // Header with statistics
           Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.all(20),
@@ -320,7 +318,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             ),
           ),
 
-          // Appointments list
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -381,7 +378,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with name and timestamp
                 Row(
                   children: [
                     Container(
@@ -448,7 +444,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
                 const SizedBox(height: 16),
 
-                // Contact information
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -466,7 +461,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
                 const SizedBox(height: 16),
 
-                // Notes section
                 if (appointment.notes.isNotEmpty) ...[
                   Row(
                     children: [
@@ -510,7 +504,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   const SizedBox(height: 16),
                 ],
 
-                // Action buttons
                 Row(
                   children: [
                     Expanded(
@@ -715,10 +708,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   void _contactCustomer(Appointment appointment) {
-    // Implement contact functionality
     print('Contacting ${appointment.name} at ${appointment.phone}');
 
-    // Show contact options dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -768,7 +759,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Implement phone call
               },
               child: Text(
                 'התקשר',
@@ -781,7 +771,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Implement email
               },
               child: Text(
                 'שלח מייל',
@@ -798,12 +787,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   void _viewPetDetails(String petId) {
-    // Implement navigation to pet details
     MaterialPageRoute route = MaterialPageRoute(
       builder: (context) => PetDetailsScreen(pet:
        Provider.of<PetViewModel>(context, listen: false).pets.where((pet) => pet.uid == petId).first
       ),
     );
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => PetDetailsScreen(petId: petId)));
   }
 }
