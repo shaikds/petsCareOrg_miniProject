@@ -196,7 +196,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
 
               const SizedBox(height: 20),
 
-              // Gender selection
               _buildSectionCard(
                 title: 'מין החיה',
                 icon: Icons.pets,
