@@ -16,7 +16,6 @@ class AddPetPhotos extends StatefulWidget {
 }
 
 class _AddPetPhotosState extends State<AddPetPhotos> {
-  // Variables to store the user's answers for each question
   Pet pet;
 
   final imagePicker = ImagePicker();
@@ -57,18 +56,17 @@ class _AddPetPhotosState extends State<AddPetPhotos> {
                       }),
                 ),
               ),
-            // Complete Button
             ElevatedButton(
               onPressed: () {
                 if (imageFileList == null || imageFileList!.isEmpty){
-                  _showSnackBar('בחרו לפחות תמונה אחת'); // if list is empty dont continue.
+                  _showSnackBar('בחרו לפחות תמונה אחת'); 
                   return; }
                 List<File> images =
                     imageFileList!.map((xFile) => File(xFile.path)).toList();
                 petViewModel.uploadImageToStorage(
-                    images, pet); // upload & save pet in database.
+                    images, pet); 
                 Navigator.popUntil(context,
-                    (route) => route.isFirst); // return to home screen.
+                    (route) => route.isFirst);
               },
               child: Text('סיום'),
             ),
@@ -79,7 +77,6 @@ class _AddPetPhotosState extends State<AddPetPhotos> {
   }
 
   void selectImages() async {
-    //TODO : Limit the photos number to 4.
     final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
 
     if (selectedImages!.isNotEmpty) {
