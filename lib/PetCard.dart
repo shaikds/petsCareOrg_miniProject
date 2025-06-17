@@ -5,13 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'model/Pet.dart'; // Import the Pet model class
+import 'model/Pet.dart'; 
 
 class PetCard extends StatelessWidget {
   final Pet pet;
   final VoidCallback onTap;
 
-  // Enhanced color scheme
+
   static const Color primaryBrown = Color(0xFF8D6E63);
   static const Color lightBrown = Color(0xFFBCAAA4);
   static const Color darkBrown = Color(0xFF5D4037);
@@ -64,13 +64,11 @@ class PetCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              // Background image with overlay
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // blured image cover
                     Image.network(
                       pet.photos.first,
                       fit: BoxFit.cover,
@@ -87,7 +85,6 @@ class PetCard extends StatelessWidget {
                       ),
                     ),
 
-                    // Gradient overlay for better text readability
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -106,7 +103,6 @@ class PetCard extends StatelessWidget {
                 ),
               ),
 
-              // Content overlay
               Positioned.fill(
                 child: Container(
                   padding: const EdgeInsets.all(12.0),
@@ -114,7 +110,6 @@ class PetCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Pet name with background
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -152,7 +147,6 @@ class PetCard extends StatelessWidget {
 
                       const SizedBox(height: 8),
 
-                      // Pet details in a card
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -193,7 +187,6 @@ class PetCard extends StatelessWidget {
                 ),
               ),
 
-              // Long press indicator for managers
               if (!FirebaseAuth.instance.currentUser!.isAnonymous)
                 Positioned(
                   top: 12,
