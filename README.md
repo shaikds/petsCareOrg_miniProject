@@ -8,4 +8,4 @@ Technologies we've worked with:
 - Python server to embedd each pet by it's image and description. Can be used locally.
 
 
-
+ 
