@@ -8,21 +8,35 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:string_similarity/string_similarity.dart';
 
 import '../model/Pet.dart';
-import '../model/embedding_repo.dart';
+import '../services/embedding_service.dart';
+import '../services/pet_search_service.dart';
+import '../config/app_config.dart';
 
 class PetViewModel extends ChangeNotifier {
   final CollectionReference _petsCollection =
       FirebaseFirestore.instance.collection('pets');
   final _storage = FirebaseStorage.instance;
-  // For Android emulator, use default (10.0.2.2)
-  // final EmbeddingRepo _embeddingRepo = EmbeddingRepo();
-  // For physical device, use your computer's LAN IP:
-  final EmbeddingRepo _embeddingRepo = EmbeddingRepo(host: '192.168.1.16');
+  late final EmbeddingService _embeddingService;
+  late final PetSearchService _searchService;
 
   List<Pet> _pets = [];
   List<String> photos = [];
   List<Pet> filteredPets = [];
   bool _isLoading = false;
+
+  PetViewModel() {
+    _embeddingService = EmbeddingService();
+    _searchService = PetSearchService(_embeddingService);
+    if (AppConfig.enableDebugLogging) {
+      AppConfig.logConfig();
+    }
+  }
+
+  @override
+  void dispose() {
+    _embeddingService.dispose();
+    super.dispose();
+  }
 
   List<Pet> get pets => _pets.toList();
 
@@ -33,28 +47,98 @@ class PetViewModel extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      // Get description embedding
+      print('=== CREATE PET START ===');
+      print('Pet name: ${pet.name}');
+      print('Pet object reference: ${pet.hashCode}');
+      print('Pet.imgEmbedding state on entry: ${pet.imgEmbedding != null ? "EXISTS (${pet.imgEmbedding?.length} dims)" : "NULL"}');
+      if (pet.imgEmbedding != null) {
+        print('Pet.imgEmbedding reference on entry: ${pet.imgEmbedding.hashCode}');
+      }
+      print('Pet.photos count: ${pet.photos.length}');
+
+      // Get embeddings with proper error handling
       List<double>? descEmbedding;
       List<double>? imgEmbedding;
 
-      try {
-        descEmbedding = await _embeddingRepo.getTextEmbedding(pet.description);
-        if (pet.photos.isNotEmpty) {
-          imgEmbedding = await _embeddingRepo.getImageEmbedding(pet.photos[0]);
+      if (pet.description.trim().isNotEmpty) {
+        final descResult = await _embeddingService.getTextEmbedding(pet.description);
+        if (descResult.isSuccess) {
+          descEmbedding = descResult.embedding;
+          if (AppConfig.enableDebugLogging) {
+            print('Generated text embedding for pet ${pet.name}');
+          }
+        } else {
+          print('Warning: Failed to generate text embedding: ${descResult.error}');
         }
-      } catch (e) {
-        print('Error getting embeddings: $e');
-        // Continue without embeddings
+      }
+
+      // Handle image embedding - prioritize existing embedding from uploadImageToStorage
+      print('=== CreatePet Image Embedding Check for ${pet.name} ===');
+      print('Pet has existing imgEmbedding: ${pet.imgEmbedding != null}');
+      print('Pet has photos: ${pet.photos.isNotEmpty}');
+      if (pet.photos.isNotEmpty) {
+        print('First photo URL: ${pet.photos[0]}');
+      }
+      if (pet.imgEmbedding != null) {
+        print('Existing embedding dimensions: ${pet.imgEmbedding?.length}');
+        print('Existing embedding reference: ${pet.imgEmbedding.hashCode}');
+      }
+
+      if (pet.imgEmbedding != null) {
+        // Use the existing embedding that was generated from local file in uploadImageToStorage
+        imgEmbedding = List<double>.from(pet.imgEmbedding!); // Create a defensive copy
+        print('✅ Using existing image embedding for pet ${pet.name} (${imgEmbedding?.length} dimensions)');
+        print('Copied embedding reference: ${imgEmbedding.hashCode}');
+      } else if (pet.photos.isNotEmpty) {
+        // This should NOT happen in normal flow, but keep as fallback
+        print('⚠️ WARNING: No existing embedding found, attempting fallback generation from: ${pet.photos[0]}');
+        print('⚠️ This likely means the embedding was lost somewhere in the upload process!');
+
+        // Try to generate embedding from Firebase URL (now supported)
+        final imgResult = await _embeddingService.getImageEmbedding(pet.photos[0]);
+        if (imgResult.isSuccess) {
+          imgEmbedding = imgResult.embedding;
+          print('✅ Fallback: Successfully generated image embedding from Firebase URL for pet ${pet.name}');
+          print('✅ Embedding dimensions: ${imgResult.embedding?.length}');
+        } else {
+          print('❌ Fallback failed: ${imgResult.error}');
+          print('❌ Pet will be created without image embedding');
+          // Keep imgEmbedding as null - this will result in a pet without image embedding
+        }
+      } else {
+        print('ℹ️ No image embedding possible - no existing embedding and no photos');
       }
 
       final petData = pet.toJson();
       if (descEmbedding != null) petData['descEmbedding'] = descEmbedding;
       if (imgEmbedding != null) petData['imgEmbedding'] = imgEmbedding;
 
+      // Additional safety: if we have pet.imgEmbedding but imgEmbedding is null, use pet.imgEmbedding directly
+      if (imgEmbedding == null && pet.imgEmbedding != null) {
+        print('🔧 SAFETY MEASURE: Using pet.imgEmbedding directly since local imgEmbedding is null');
+        petData['imgEmbedding'] = pet.imgEmbedding;
+      }
+
+      print('=== Final Pet Data for ${pet.name} ===');
+      print('Has descEmbedding: ${petData['descEmbedding'] != null}');
+      print('Has imgEmbedding: ${petData['imgEmbedding'] != null}');
+      if (petData['imgEmbedding'] != null) {
+        print('ImgEmbedding length: ${(petData['imgEmbedding'] as List).length}');
+        print('ImgEmbedding reference: ${petData['imgEmbedding'].hashCode}');
+      }
+      print('Pet.imgEmbedding still exists: ${pet.imgEmbedding != null}');
+      if (pet.imgEmbedding != null) {
+        print('Pet.imgEmbedding length: ${pet.imgEmbedding?.length}');
+        print('Pet.imgEmbedding reference: ${pet.imgEmbedding.hashCode}');
+      }
+
       await _petsCollection.add(petData);
+      print('=== PET SUCCESSFULLY SAVED TO FIRESTORE ===');
+      print('Pet ${pet.name} saved with ${petData['imgEmbedding'] != null ? "image embedding" : "NO image embedding"}');
       await _fetchPets();
     } catch (e) {
       print('Error creating pet: $e');
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -116,15 +200,48 @@ class PetViewModel extends ChangeNotifier {
 
       final String petName = pet.name + pet.age.toString();
 
+      print('=== UPLOAD IMAGE TO STORAGE START ===');
+      print('Pet name: ${pet.name}');
+      print('Initial pet.imgEmbedding state: ${pet.imgEmbedding != null ? "EXISTS (${pet.imgEmbedding?.length} dims)" : "NULL"}');
+      print('Number of image files: ${imageFiles.length}');
+
       // Get image embedding for the first local file BEFORE upload
-      try {
-        if (imageFiles.isNotEmpty) {
-          pet.imgEmbedding = await _embeddingRepo.getImageEmbedding(imageFiles[0].path);
+      if (imageFiles.isNotEmpty) {
+        print('Processing local file: ${imageFiles[0].path}');
+
+        final imgResult = await _embeddingService.getImageEmbedding(imageFiles[0].path);
+        if (imgResult.isSuccess) {
+          pet.imgEmbedding = imgResult.embedding;
+          print('✅ Generated image embedding before upload for pet ${pet.name}');
+          print('Embedding dimensions: ${imgResult.embedding?.length}');
+          print('Pet.imgEmbedding reference: ${pet.imgEmbedding.hashCode}');
+          print('Pet object reference: ${pet.hashCode}');
+          if (AppConfig.enableDebugLogging) {
+            print('Embedding preview: ${imgResult.embedding?.take(5)}...');
+          }
+        } else {
+          print('❌ Failed to generate image embedding before upload: ${imgResult.error}');
+
+          // Fallback: retry once after a short delay
+          print('🔄 Attempting to retry embedding generation...');
+          await Future.delayed(Duration(milliseconds: 1000));
+
+          final retryResult = await _embeddingService.getImageEmbedding(imageFiles[0].path);
+          if (retryResult.isSuccess) {
+            pet.imgEmbedding = retryResult.embedding;
+            print('✅ Retry successful: Generated image embedding for pet ${pet.name}');
+            print('Embedding dimensions: ${retryResult.embedding?.length}');
+          } else {
+            print('❌ Retry also failed: ${retryResult.error}');
+            print('⚠️ Pet will be created without image embedding');
+            // Continue with the upload process even if embedding fails
+          }
         }
-      } catch (e) {
-        print('Error getting image embedding: $e');
+      } else {
+        print('⚠️ No image files provided for pet ${pet.name}');
       }
 
+      print('=== UPLOADING FILES TO FIREBASE ===');
       for (File file in imageFiles) {
         String storagePath =
             'pet/$petName/${DateTime.now().millisecondsSinceEpoch}.jpg';
@@ -133,11 +250,22 @@ class PetViewModel extends ChangeNotifier {
         String downloadURL = await snapshot.ref.getDownloadURL();
         pet.photos.add(downloadURL);
         photos.add(downloadURL);
+        print('Uploaded file: ${downloadURL}');
+      }
+
+      print('=== BEFORE CALLING createPet ===');
+      print('Pet name: ${pet.name}');
+      print('Pet.imgEmbedding state: ${pet.imgEmbedding != null ? "EXISTS (${pet.imgEmbedding?.length} dims)" : "NULL"}');
+      print('Pet.photos count: ${pet.photos.length}');
+      print('Pet object reference: ${pet.hashCode}');
+      if (pet.imgEmbedding != null) {
+        print('Pet.imgEmbedding reference: ${pet.imgEmbedding.hashCode}');
       }
 
       await createPet(pet);
     } catch (e) {
       print('Error uploading image to Firebase Storage: $e');
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -153,30 +281,26 @@ class PetViewModel extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final userEmbedding =
-          await _embeddingRepo.getImageEmbedding(userImagePath);
+      final filters = SearchFilters(
+        maxAge: AppConfig.maxAgeLimit,
+        minEnergyLevel: AppConfig.minEnergyLevel,
+        description: '',
+      );
 
-      // Filter pets with valid image embeddings
-      final petsWithEmbeddings = pets
-          .where(
-              (pet) => pet.imgEmbedding != null && pet.imgEmbedding!.isNotEmpty)
-          .toList();
+      final result = await _searchService.searchByImage(
+        allPets: pets,
+        imagePath: userImagePath,
+        filters: filters,
+        customTopN: topN,
+      );
 
-      if (petsWithEmbeddings.isEmpty) {
+      if (result.isSuccess) {
+        filteredPets = result.pets;
+        return filteredPets;
+      } else {
+        print('Image search failed: ${result.error}');
         return [];
       }
-
-      final scoredPets = petsWithEmbeddings.map((pet) {
-        final similarity = cosineSimilarity(userEmbedding, pet.imgEmbedding!);
-        return {'pet': pet, 'similarity': similarity};
-      }).toList();
-
-      scoredPets.sort((a, b) =>
-          (b['similarity'] as double).compareTo(a['similarity'] as double));
-
-      filteredPets =
-          scoredPets.take(topN).map((entry) => entry['pet'] as Pet).toList();
-      return filteredPets;
     } catch (e) {
       print('Error finding image matches: $e');
       return [];
@@ -198,104 +322,44 @@ class PetViewModel extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      var gender = isMale
-          ? 'זכר'
-          : isFemale
-              ? 'נקבה'
-              : null;
-      // Debug print all pets and their attributes
-      print('All pets:');
-      for (var pet in pets) {
-        print(
-            'Name: \\${pet.name} | Gender: \\${pet.gender} | Age: \\${pet.age} | Energy: \\${pet.energyLevel}');
-      }
 
-      // Filter by basic attributes first
-      final filteredByAttributes = gender == null
-          ? pets
-              .where((pet) =>
-                  pet.age / 2 <= maxAge && pet.energyLevel >= minEnergyLevel)
-              .toList()
-          : pets
-              .where((pet) =>
-                  pet.gender.contains(gender.toString()) &&
-                  pet.age / 2 <= maxAge &&
-                  pet.energyLevel >= minEnergyLevel)
-              .toList();
+      final filters = SearchFilters(
+        isMale: isMale,
+        isFemale: isFemale,
+        maxAge: maxAge,
+        minEnergyLevel: minEnergyLevel,
+        description: userDescription,
+      );
 
-      print('Filtered by attributes: \\${filteredByAttributes.length} pets');
+      final result = await _searchService.searchPets(
+        allPets: pets,
+        filters: filters,
+        searchMode: SearchMode.textToText,
+        customTopN: topN,
+      );
 
-      if (userDescription.trim().isEmpty) {
-        filteredPets = filteredByAttributes.take(topN).toList();
-        print('No description provided, returning attribute-filtered pets');
+      if (result.isSuccess) {
+        filteredPets = result.pets;
+        if (AppConfig.enableDebugLogging) {
+          print('Found ${filteredPets.length} matching pets');
+        }
         return filteredPets;
+      } else {
+        print('Search failed: ${result.error}');
+        return [];
       }
-
-      List<Map<String, dynamic>> scoredPets = [];
-
-      try {
-        // Try embedding-based search first
-        final userEmbedding =
-            await _embeddingRepo.getTextEmbedding(userDescription);
-
-        scoredPets = filteredByAttributes
-            .where((pet) =>
-                pet.descEmbedding != null && pet.descEmbedding!.isNotEmpty)
-            .map((pet) {
-          final similarity =
-              cosineSimilarity(userEmbedding, pet.descEmbedding!);
-          return {'pet': pet, 'similarity': similarity};
-        }).toList();
-
-        print('Embedding-based scored pets: \\${scoredPets.length}');
-      } catch (e) {
-        print('Embedding search failed, falling back to description score: $e');
-      }
-
-      // If embedding search failed or found no results, fall back to description score
-      if (scoredPets.isEmpty) {
-        print('Falling back to description score');
-        scoredPets = filteredByAttributes.map((pet) {
-          final similarity =
-              _calculateDescriptionScore(pet.description, userDescription);
-          return {'pet': pet, 'similarity': similarity};
-        }).toList();
-      }
-
-      scoredPets.sort(
-          (a, b) => (b['similarity'] as num).compareTo(a['similarity'] as num));
-
-      filteredPets =
-          scoredPets.take(topN).map((entry) => entry['pet'] as Pet).toList();
-
-      print('Returning \\${filteredPets.length} pets');
-
-      // if (filteredPets.isEmpty){ // Fallback handling, again
-      //   return findTopMatchesFallBack(pets, isMale, isFemale, maxAge, minEnergyLevel, userDescription);
-      // }
-      return filteredPets;
     } catch (e) {
       print('Error finding matches: $e');
       return [];
     } finally {
-
       _isLoading = false;
       notifyListeners();
     }
   }
 
+  @Deprecated('Use EmbeddingService.cosineSimilarity instead')
   double cosineSimilarity(List<double> a, List<double> b) {
-    if (a.isEmpty || b.isEmpty || a.length != b.length) return 0.0;
-
-    double dot = 0, normA = 0, normB = 0;
-    for (int i = 0; i < a.length; i++) {
-      dot += a[i] * b[i];
-      normA += a[i] * a[i];
-      normB += b[i] * b[i];
-    }
-
-    if (normA == 0 || normB == 0) return 0.0;
-    return dot / (sqrt(normA) * sqrt(normB));
+    return EmbeddingService.cosineSimilarity(a, b);
   }
 
   // Method to calculate the description score between two strings
@@ -343,86 +407,150 @@ class PetViewModel extends ChangeNotifier {
     return score;
   }
 
+  static bool _hasRunEmbedding = false; // Flag to ensure it runs only once
+
   Future<void> embedAllPets() async {
+    // Only run once per app session
+    if (_hasRunEmbedding) {
+      print('🔄 Embedding already completed this session. Skipping.');
+      return;
+    }
+
+    print('🚀 Starting automated pet embedding process...');
+    _hasRunEmbedding = true;
+
     try {
-      print('Starting embedding process...');
-      final pets = await FirebaseFirestore.instance.collection('pets').get();
-      print('Found ${pets.docs.length} pets to process');
+      // Check if embedding server is available
+      print('🔍 Checking embedding server health...');
+      final isServerHealthy = await _embeddingService.isServerHealthy();
+      if (!isServerHealthy) {
+        print('❌ WARNING: Embedding server is not available!');
+        print('Please make sure the server is running: python embed_server.py');
+        _hasRunEmbedding = false; // Reset flag so it can be retried
+        return;
+      }
+      print('✅ Embedding server is healthy and ready');
 
-      for (final doc in pets.docs) {
-        print('\nProcessing pet ${doc.id}...');
-        final data = doc.data();
-        final desc = data['description'] ?? '';
-        final photos = List<String>.from(data['photos'] ?? []);
-        String? mainPhotoPath;
+      // Get all pets from Firestore
+      print('📋 Fetching pets from Firestore...');
+      final querySnapshot = await _petsCollection.get();
+      final petDocs = querySnapshot.docs;
 
-        if (photos.isNotEmpty) {
-          try {
-            final url = photos.first;
-            print('Downloading image from: $url');
-            final tempDir = Directory.systemTemp;
-            final tempFile = File('${tempDir.path}/${doc.id}_main.jpg');
-            final response = await http.get(Uri.parse(url));
+      if (petDocs.isEmpty) {
+        print('📋 No pets found in database. Nothing to embed.');
+        return;
+      }
 
-            if (response.statusCode == 200) {
-              await tempFile.writeAsBytes(response.bodyBytes);
-              mainPhotoPath = tempFile.path;
-              print('Successfully downloaded image to: $mainPhotoPath');
-            } else {
-              print(
-                  'Failed to download image for pet ${doc.id}: HTTP ${response.statusCode}');
-              print('Response body: ${response.body}');
-            }
-          } catch (e, stackTrace) {
-            print('Failed to download image for pet ${doc.id}:');
-            print('Error: $e');
-            print('Stack trace: $stackTrace');
-          }
-        }
+      print('Found ${petDocs.length} pets to process');
+
+      int successCount = 0;
+      int failureCount = 0;
+      int skippedCount = 0;
+      int textEmbeddingCount = 0;
+      int imageEmbeddingCount = 0;
+
+      for (int i = 0; i < petDocs.length; i++) {
+        final doc = petDocs[i];
+        final petNumber = i + 1;
 
         try {
+          final data = doc.data() as Map<String, dynamic>;
+          final petName = data['name'] ?? 'Unknown';
+          final desc = data['description'] ?? '';
+          final photos = List<String>.from(data['photos'] ?? []);
+
+          // Check if embeddings already exist
+          final hasDescEmbedding = data['descEmbedding'] != null;
+          final hasImgEmbedding = data['imgEmbedding'] != null;
+
+          print('[$petNumber/${petDocs.length}] Processing: $petName');
+
+          // Skip if already has both embeddings
+          if (hasDescEmbedding && hasImgEmbedding) {
+            print('  ⏭️ Already has both embeddings - skipping');
+            skippedCount++;
+            continue;
+          }
+
           List<double>? descEmbedding;
           List<double>? imgEmbedding;
+          bool hasUpdates = false;
 
-          if (desc.isNotEmpty) {
-            print('Getting text embedding for description...');
-            try {
-              descEmbedding = await _embeddingRepo.getTextEmbedding(desc);
-              print('Successfully got text embedding');
-            } catch (e) {
-              print('Text embedding failed: $e');
+          // Generate text embedding if needed
+          if (!hasDescEmbedding && desc.isNotEmpty) {
+            print('  🔤 Generating text embedding...');
+            final result = await _embeddingService.getTextEmbedding(desc);
+            if (result.isSuccess) {
+              descEmbedding = result.embedding;
+              textEmbeddingCount++;
+              hasUpdates = true;
+              print('  ✅ Text embedding: ${descEmbedding?.length} dimensions');
+            } else {
+              print('  ❌ Text embedding failed: ${result.error}');
             }
           }
 
-          if (mainPhotoPath != null && File(mainPhotoPath).existsSync()) {
-            print('Getting image embedding...');
-            try {
-              imgEmbedding =
-                  await _embeddingRepo.getImageEmbedding(mainPhotoPath);
-              print('Successfully got image embedding');
-            } catch (e) {
-              print('Image embedding failed: $e');
+          // Generate image embedding if needed
+          if (!hasImgEmbedding && photos.isNotEmpty) {
+            print('  🖼️ Generating image embedding from URL...');
+            final imageUrl = photos.first;
+
+            final result = await _embeddingService.getImageEmbedding(imageUrl);
+            if (result.isSuccess) {
+              imgEmbedding = result.embedding;
+              imageEmbeddingCount++;
+              hasUpdates = true;
+              print('  ✅ Image embedding: ${imgEmbedding?.length} dimensions');
+            } else {
+              print('  ❌ Image embedding failed: ${result.error}');
             }
           }
 
-          if (descEmbedding != null || imgEmbedding != null) {
-            await doc.reference.update({
-              if (descEmbedding != null) 'descEmbedding': descEmbedding,
-              if (imgEmbedding != null) 'imgEmbedding': imgEmbedding,
-            });
-            print('Successfully updated pet ${doc.id} with embeddings');
+          // Update Firestore if we have new embeddings
+          if (hasUpdates) {
+            print('  💾 Updating Firestore...');
+            final updateData = <String, dynamic>{};
+            if (descEmbedding != null) updateData['descEmbedding'] = descEmbedding;
+            if (imgEmbedding != null) updateData['imgEmbedding'] = imgEmbedding;
+
+            await doc.reference.update(updateData);
+            print('  ✅ Successfully updated pet $petName');
+            successCount++;
+          } else {
+            print('  ⚠️ No new embeddings generated');
+            failureCount++;
           }
-        } catch (e, stackTrace) {
-          print('Failed to process embeddings for pet ${doc.id}:');
-          print('Error: $e');
-          print('Stack trace: $stackTrace');
+
+        } catch (e) {
+          print('  ❌ Error processing pet ${doc.id}: $e');
+          failureCount++;
         }
       }
-      print('\nAll pets processed!');
-    } catch (e, stackTrace) {
-      print('Fatal error in embedAllPets:');
-      print('Error: $e');
-      print('Stack trace: $stackTrace');
+
+      // Final summary
+      print('\n🎉 ============= EMBEDDING PROCESS COMPLETE =============');
+      print('📊 SUMMARY:');
+      print('   ✅ Successfully processed: $successCount pets');
+      print('   ❌ Failed to process: $failureCount pets');
+      print('   ⏭️ Skipped (already had embeddings): $skippedCount pets');
+      print('   📝 Text embeddings generated: $textEmbeddingCount');
+      print('   🖼️ Image embeddings generated: $imageEmbeddingCount');
+      print('   📋 Total pets in database: ${petDocs.length}');
+
+      final processedTotal = successCount + failureCount;
+      if (processedTotal > 0) {
+        final successRate = (successCount / processedTotal * 100).round();
+        print('   📈 Success rate: $successRate%');
+      }
+
+      print('=====================================================');
+
+      // Refresh the pets list to include new embeddings
+      await _fetchPets();
+
+    } catch (e) {
+      print('💥 Fatal error in embedding process: $e');
+      _hasRunEmbedding = false; // Reset flag so it can be retried
     }
   }
 
@@ -439,58 +567,33 @@ class PetViewModel extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      var gender = isMale
-          ? 'זכר'
-          : isFemale
-              ? 'נקבה'
-              : null;
+      final filters = SearchFilters(
+        isMale: isMale,
+        isFemale: isFemale,
+        maxAge: maxAge,
+        minEnergyLevel: minEnergyLevel,
+        description: userDescription,
+      );
 
-      // Use the same filtering logic as findTopMatches
-      final filteredByAttributes = gender == null
-          ? pets
-              .where((pet) =>
-                  pet.age / 2 <= maxAge && pet.energyLevel >= minEnergyLevel)
-              .toList()
-          : pets
-              .where((pet) =>
-                  pet.gender.contains(gender.toString()) &&
-                  pet.age / 2 <= maxAge &&
-                  pet.energyLevel >= minEnergyLevel)
-              .toList();
+      final result = await _searchService.searchPets(
+        allPets: pets,
+        filters: filters,
+        searchMode: SearchMode.textToImage,
+        customTopN: topN,
+      );
 
-      print('All pets:');
-      for (var pet in pets) {
-        print('Name: \\${pet.name} | Gender: \\${pet.gender} | Age: \\${pet.age} | Energy: \\${pet.energyLevel}');
-      }
-      print('Filtered by attributes: \\${filteredByAttributes.length} pets');
-
-      if (userDescription.trim().isEmpty) {
-        filteredPets = filteredByAttributes.take(topN).toList();
-        print('No description provided, returning attribute-filtered pets');
+      if (result.isSuccess) {
+        filteredPets = result.pets;
+        if (AppConfig.enableDebugLogging) {
+          print('Cross-modal search found ${filteredPets.length} matching pets');
+        }
         return filteredPets;
+      } else {
+        print('Cross-modal search failed: ${result.error}');
+        return [];
       }
-
-      List<Map<String, dynamic>> scoredPets = [];
-
-      // Get the user description embedding
-      final userEmbedding = await _embeddingRepo.getTextEmbedding(userDescription);
-
-      // Compare user description embedding to pet image embeddings
-      scoredPets = filteredByAttributes
-          .where((pet) => pet.imgEmbedding != null && pet.imgEmbedding!.isNotEmpty)
-          .map((pet) {
-        final similarity = cosineSimilarity(userEmbedding, pet.imgEmbedding!);
-        return {'pet': pet, 'similarity': similarity};
-      }).toList();
-      print('Semantic (desc->img) scored pets: \\${scoredPets.length}');
-
-      scoredPets.sort((a, b) => (b['similarity'] as num).compareTo(a['similarity'] as num));
-      filteredPets = scoredPets.take(topN).map((entry) => entry['pet'] as Pet).toList();
-
-      print('Returning \\${filteredPets.length} pets');
-      return filteredPets;
     } catch (e) {
-      print('Error finding matches: $e');
+      print('Error in cross-modal search: $e');
       return [];
     } finally {
       _isLoading = false;
@@ -500,48 +603,27 @@ class PetViewModel extends ChangeNotifier {
 
 
 
+  @Deprecated('Replaced by PetSearchService with better error handling')
   Future<List<Pet>> findTopMatchesFallBack(List<Pet> pets, bool isMale, bool isFemale,
       int maxAge, int minEnergyLevel, String userDescription) async {
-    // Filter the pets based on user preferences
-    int score = 0;
-    filteredPets = await pets.where((pet) {
-      if (!isMale && isFemale) {
-        if (isMale && !pet.gender.contains('זכר')) return false;
-        if (isFemale && !pet.gender.contains('נקבה')) return false;
-      }
-      if (pet.age > maxAge) return false;
-      if (pet.energyLevel < minEnergyLevel) return false;
+    print('This fallback method is deprecated. Using PetSearchService instead.');
 
-      // Calculate a score for the pet based on the description matching
-      // Only if the user has entered a description
-      if (userDescription.isNotEmpty) {
-        var similarityTo = userDescription.similarityTo(pet.description);
-        print(similarityTo);
-        int descriptionScore =
-        _calculateDescriptionScore(pet.description, userDescription);
-        if (descriptionScore <= 0) return false;
-      }
-      return true;
-    }).toList();
+    final filters = SearchFilters(
+      isMale: isMale,
+      isFemale: isFemale,
+      maxAge: maxAge,
+      minEnergyLevel: minEnergyLevel,
+      description: userDescription,
+    );
 
-    // Sort the filtered pets based on some criteria (e.g., energy level, age, etc.).
-    // In this example, we're sorting by energy level in descending order and description score in descending order.
-    filteredPets.sort((a, b) {
-      int energyLevelComparison = b.energyLevel.compareTo(a.energyLevel);
-      int ageComparison = b.age.compareTo(a.age);
-      if (energyLevelComparison < 0) {
-        return energyLevelComparison;
-      } else if (ageComparison < 0) {
-        return ageComparison;
-      } else {
-        return b.descriptionScore.compareTo(a.descriptionScore);
-      }
-    });
+    final result = await _searchService.searchPets(
+      allPets: pets,
+      filters: filters,
+      searchMode: SearchMode.textToText,
+      customTopN: 2,
+    );
 
-    // Get the top 3 matches (or fewer if there are not enough matches)
-    List<Pet> topMatches = filteredPets.take(2).toList();
-    print(topMatches);
-    return topMatches;
+    return result.isSuccess ? result.pets : [];
   }
 
 }

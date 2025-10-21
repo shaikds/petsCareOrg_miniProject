@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../AppColors.dart';
 import '../model/Pet.dart';
+import '../widgets/blurred_image_widget.dart';
 
 class PetDetailsScreen extends StatefulWidget {
   final Pet pet;
@@ -25,16 +27,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Enhanced color scheme
-  static const Color primaryBrown = Color(0xFF8D6E63);
-  static const Color lightBrown = Color(0xFFBCAAA4);
-  static const Color darkBrown = Color(0xFF5D4037);
-  static const Color accentYellow = Color(0xFFFFC107);
-  static const Color lightYellow = Color(0xFFFFF8E1);
-  static const Color lightGray = Color(0xFFF5F5F5);
-  static const Color mediumGray = Color(0xFF9E9E9E);
-  static const Color darkGray = Color(0xFF424242);
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -46,7 +38,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: lightGray,
+        backgroundColor: AppColors.lightGray,
         appBar: AppBar(
           title: Text(
             widget.pet.name,
@@ -58,8 +50,8 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
           ),
           centerTitle: true,
           elevation: 8,
-          shadowColor: darkBrown.withOpacity(0.3),
-          backgroundColor: primaryBrown,
+          shadowColor: AppColors.darkBrown.withOpacity(0.3),
+          backgroundColor: AppColors.primaryBrown,
           iconTheme: const IconThemeData(color: Colors.white),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
@@ -79,7 +71,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: darkBrown.withOpacity(0.3),
+                          color: AppColors.darkBrown.withOpacity(0.3),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -91,12 +83,12 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: lightYellow,
+                            color: AppColors.lightYellow,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.check_circle,
-                            color: accentYellow,
+                            color: AppColors.accentYellow,
                             size: 48,
                           ),
                         ),
@@ -106,7 +98,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: darkBrown,
+                            color: AppColors.darkBrown,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -114,13 +106,13 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                           'נחזור אליך בהקדם',
                           style: TextStyle(
                             fontSize: 16,
-                            color: mediumGray,
+                            color: AppColors.mediumGray,
                           ),
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryBrown,
+                            backgroundColor: AppColors.primaryBrown,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
@@ -161,7 +153,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: darkBrown.withOpacity(0.2),
+                            color: AppColors.darkBrown.withOpacity(0.2),
                             blurRadius: 15,
                             offset: const Offset(0, 8),
                           ),
@@ -181,7 +173,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: darkBrown.withOpacity(0.1),
+                            color: AppColors.darkBrown.withOpacity(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -192,7 +184,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: darkGray,
+                          color: AppColors.darkGray,
                           height: 1.5,
                         ),
                         textAlign: TextAlign.center,
@@ -208,7 +200,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: darkBrown.withOpacity(0.1),
+                            color: AppColors.darkBrown.withOpacity(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -222,7 +214,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: lightYellow,
+                              color: AppColors.lightYellow,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -230,7 +222,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: darkBrown,
+                                color: AppColors.darkBrown,
                               ),
                             ),
                           ),
@@ -254,7 +246,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: darkBrown.withOpacity(0.1),
+                            color: AppColors.darkBrown.withOpacity(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -270,7 +262,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: lightYellow,
+                                color: AppColors.lightYellow,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -278,7 +270,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: darkBrown,
+                                  color: AppColors.darkBrown,
                                 ),
                               ),
                             ),
@@ -348,7 +340,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: darkBrown.withOpacity(0.1),
+                color: AppColors.darkBrown.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -357,7 +349,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
           child: SafeArea(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: primaryBrown,
+                backgroundColor: AppColors.primaryBrown,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 shape: RoundedRectangleBorder(
@@ -376,7 +368,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: const Text('הטופס תקין! יוצר פגישה...'),
-                      backgroundColor: accentYellow,
+                      backgroundColor: AppColors.accentYellow,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -472,21 +464,21 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: lightGray,
+        color: AppColors.lightGray,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: lightBrown.withOpacity(0.3)),
+        border: Border.all(color: AppColors.lightBrown.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: lightYellow,
+              color: AppColors.lightYellow,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
-              color: primaryBrown,
+              color: AppColors.primaryBrown,
               size: 20,
             ),
           ),
@@ -496,7 +488,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: mediumGray,
+              color: AppColors.mediumGray,
             ),
           ),
           const Spacer(),
@@ -505,7 +497,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: darkBrown,
+              color: AppColors.darkBrown,
             ),
             textDirection: TextDirection.ltr,
           ),
@@ -526,7 +518,7 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: lightBrown.withOpacity(0.1),
+            color: AppColors.lightBrown.withOpacity(0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -541,25 +533,25 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
         textDirection: TextDirection.ltr,
         validator: validator,
         style: TextStyle(
-          color: darkGray,
+          color: AppColors.darkGray,
           fontSize: 16,
         ),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
-            color: mediumGray,
+            color: AppColors.mediumGray,
             fontSize: 14,
           ),
           prefixIcon: Container(
             margin: const EdgeInsets.all(8),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: lightYellow,
+              color: AppColors.lightYellow,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
-              color: primaryBrown,
+              color: AppColors.primaryBrown,
               size: 20,
             ),
           ),
@@ -567,15 +559,15 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: lightBrown.withOpacity(0.3)),
+            borderSide: BorderSide(color: AppColors.lightBrown.withOpacity(0.3)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: lightBrown.withOpacity(0.3)),
+            borderSide: BorderSide(color: AppColors.lightBrown.withOpacity(0.3)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: primaryBrown, width: 2),
+            borderSide: BorderSide(color: AppColors.primaryBrown, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -635,12 +627,8 @@ class _ImageSliderState extends State<ImageSlider> {
                   ),
                 ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  widget.imageUrls[index],
-                  fit: BoxFit.cover,
-                ),
+              child: PetPhotoWidget(
+                imageUrl: widget.imageUrls[index],
               ),
             );
           },
@@ -665,7 +653,7 @@ class _ImageSliderState extends State<ImageSlider> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_forward),
                 onPressed: _previousImage,
-                color: const Color(0xFF8D6E63),
+                color: AppColors.primaryBrown,
                 iconSize: 24,
               ),
             ),
@@ -691,7 +679,7 @@ class _ImageSliderState extends State<ImageSlider> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: _nextImage,
-                color: const Color(0xFF8D6E63),
+                color: AppColors.primaryBrown,
                 iconSize: 24,
               ),
             ),
@@ -712,7 +700,7 @@ class _ImageSliderState extends State<ImageSlider> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                   color: _currentIndex == index
-                      ? const Color(0xFFFFC107)
+                      ? AppColors.accentYellow
                       : Colors.white.withOpacity(0.7),
                   boxShadow: [
                     BoxShadow(

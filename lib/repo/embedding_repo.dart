@@ -2,19 +2,26 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:io' show Platform;
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 
+@Deprecated('Use EmbeddingService instead')
 class EmbeddingRepo {
   final String textUrl;
   final String imageUrl;
 
   EmbeddingRepo({
     String? host,
-  }) : textUrl = 'http://${host ?? _getDefaultHost()}:8000/embed_text',
-       imageUrl = 'http://${host ?? _getDefaultHost()}:8000/embed_image';
+  }) : textUrl = host != null
+           ? 'http://$host:8000/embed_text'
+           : AppConfig.embeddingTextUrl,
+       imageUrl = host != null
+           ? 'http://$host:8000/embed_image'
+           : AppConfig.embeddingImageUrl;
 
+  @Deprecated('This method will be removed. Use AppConfig.embeddingServerHost instead')
   static String _getDefaultHost() {
     if (Platform.isAndroid) {
-      return '10.0.2.2'; // Special IP for Android emulator to reach host machine
+      return '10.0.2.2';
     }
     return '127.0.0.1'; // For iOS simulator and desktop
   }

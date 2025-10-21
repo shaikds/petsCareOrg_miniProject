@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
-import 'view/home.dart';
+import 'view/HomeScreen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -26,11 +26,9 @@ class AuthGate extends StatelessWidget {
               );
             },
             subtitleBuilder: (context, action) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: action == AuthAction.signIn
-                    ? const Text('Welcome to FlutterFire, please sign in!')
-                    : const Text('Welcome to Flutterfire, please sign up!'),
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text('Welcome to PetCare Organization Name, please sign in!')
               );
             },
             footerBuilder: (context, action) {

@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../AppColors.dart';
 import '../model/Pet.dart';
 import '../viewmodel/PetsViewModel.dart';
-
-class AppColors {
-  static const Color primaryBrown = Color(0xFF8D6E63);
-  static const Color lightBrown = Color(0xFFBCAAA4);
-  static const Color darkBrown = Color(0xFF5D4037);
-  static const Color accentYellow = Color(0xFFFFC107);
-  static const Color lightYellow = Color(0xFFFFF8E1);
-  static const Color lightGray = Color(0xFFF5F5F5);
-  static const Color mediumGray = Color(0xFF9E9E9E);
-  static const Color darkGray = Color(0xFF424242);
-}
 
 class ManagerScreen extends StatefulWidget {
   final Pet pet;
@@ -39,7 +29,6 @@ class _ManagerScreen extends State<ManagerScreen> {
   void initState() {
     super.initState();
 
-    // Initialize the text controllers with the current pet's values
     _nameController.text = widget.pet.name;
     _energyLevelController.text = widget.pet.energyLevel.toString();
     _genderController.text = widget.pet.gender;
@@ -114,7 +103,6 @@ class _ManagerScreen extends State<ManagerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header card with pet info
                 Container(
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.only(bottom: 24),
@@ -177,7 +165,6 @@ class _ManagerScreen extends State<ManagerScreen> {
                   ),
                 ),
 
-                // Name field
                 _buildSectionCard(
                   title: 'שם החיה',
                   icon: Icons.pets,
@@ -190,7 +177,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 20),
 
-                // Description field (disabled)
                 _buildSectionCard(
                   title: 'תיאור',
                   icon: Icons.description,
@@ -204,7 +190,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 20),
 
-                // Age slider
                 _buildSectionCard(
                   title: 'גיל החיה',
                   icon: Icons.cake,
@@ -213,7 +198,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 20),
 
-                // Energy level slider
                 _buildSectionCard(
                   title: 'רמת אנרגיה',
                   icon: Icons.flash_on,
@@ -222,7 +206,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 20),
 
-                // Gender selection
                 _buildSectionCard(
                   title: 'מין החיה',
                   icon: Icons.pets,
@@ -231,7 +214,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 20),
 
-                // Size selection
                 _buildSectionCard(
                   title: 'גודל החיה',
                   icon: Icons.straighten,
@@ -240,7 +222,6 @@ class _ManagerScreen extends State<ManagerScreen> {
 
                 const SizedBox(height: 32),
 
-                // Action buttons
                 Row(
                   children: [
                     Expanded(
@@ -270,7 +251,6 @@ class _ManagerScreen extends State<ManagerScreen> {
                             ),
                           ),
                           onPressed: () {
-                            // Update the pet in the database using the PetViewModel
                             final updatedPet = Pet(
                               name: _nameController.text,
                               age: _ageValue.toInt(),
@@ -283,7 +263,6 @@ class _ManagerScreen extends State<ManagerScreen> {
                             );
                             _petViewModel.updatePet(widget.pet.uid, updatedPet);
 
-                            // Navigate back to the previous screen
                             Navigator.pop(context);
                           },
                           child: Row(
@@ -343,7 +322,6 @@ class _ManagerScreen extends State<ManagerScreen> {
                             ),
                           ),
                           onPressed: () {
-                            // Delete the pet from the database using the PetViewModel
                             _showDeleteConfirmationDialog(context);
                           },
                           child: Row(
@@ -720,7 +698,6 @@ class _ManagerScreen extends State<ManagerScreen> {
         ),
         child: Row(
           children: [
-            // Radio button
             Container(
               width: 24,
               height: 24,
@@ -742,7 +719,6 @@ class _ManagerScreen extends State<ManagerScreen> {
             ),
             const SizedBox(width: 12),
 
-            // Icon
             Icon(
               icon,
               color: isSelected ? AppColors.primaryBrown : AppColors.mediumGray,
@@ -750,7 +726,6 @@ class _ManagerScreen extends State<ManagerScreen> {
             ),
             const SizedBox(width: 8),
 
-            // Title
             Text(
               title,
               style: TextStyle(
@@ -811,7 +786,6 @@ class _ManagerScreen extends State<ManagerScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                // Close the dialog when the user taps "Cancel"
                 Navigator.of(context).pop();
               },
               style: TextButton.styleFrom(

@@ -1,7 +1,7 @@
 import 'package:PetCare_App/view/SplashScreen.dart';
 import 'package:flutter/material.dart';
 
-import 'auth_gate.dart';
+import 'AuthGate.dart';
 // show splash screen for 5 seconds, then navigate to the AuthGate
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

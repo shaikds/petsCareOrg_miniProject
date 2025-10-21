@@ -9,4 +9,9 @@ class AppColors {
   static const Color lightGray = Color(0xFFF5F5F5);
   static const Color mediumGray = Color(0xFF9E9E9E);
   static const Color darkGray = Color(0xFF424242);
+
+  // Additional colors for rankings and special features
+  static const Color goldColor = Color(0xFFFFD700);
+  static const Color silverColor = Color(0xFFC0C0C0);
+  static const Color bronzeColor = Color(0xFFCD7F32);
 }

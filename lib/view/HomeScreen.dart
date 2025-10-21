@@ -2,6 +2,7 @@ import 'package:PetCare_App/view/AppointmentsScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../AppColors.dart';
 import '../PetCard.dart';
 import '../model/Pet.dart';
 import '../viewmodel/PetsViewModel.dart';
@@ -11,44 +12,34 @@ import 'ScreenAddPet.dart';
 import 'SignInScreen.dart';
 
 class HomeScreen extends StatelessWidget {
-  //TODO : check IT .
-  // final isFabVisible = true; //TODO : Erase it after release.
+  // final isFabVisible = true;
   HomeScreen({Key? key}) : super(key: key);
-
-  // Enhanced color scheme
-  static const Color primaryBrown = Color(0xFF8D6E63);
-  static const Color lightBrown = Color(0xFFBCAAA4);
-  static const Color darkBrown = Color(0xFF5D4037);
-  static const Color accentYellow = Color(0xFFFFC107);
-  static const Color lightYellow = Color(0xFFFFF8E1);
-  static const Color lightGray = Color(0xFFF5F5F5);
-  static const Color mediumGray = Color(0xFF9E9E9E);
-  static const Color darkGray = Color(0xFF424242);
 
   @override
   Widget build(BuildContext context) {
     var vm = Provider.of<PetViewModel>(context, listen: true);
     vm.readPets();
     List<Pet> pets = vm.pets;
+    // Run embedding process once when home screen loads
     // vm.embedAllPets();
     // only manager user has access not anonymous user
     final isFabVisible = !FirebaseAuth.instance.currentUser!.isAnonymous;
 
     return Scaffold(
-      backgroundColor: lightGray,
+      backgroundColor: AppColors.lightGray,
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [lightYellow, accentYellow.withOpacity(0.3)],
+              colors: [AppColors.lightYellow, AppColors.accentYellow.withOpacity(0.3)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: darkBrown.withOpacity(0.1),
+                color: AppColors.darkBrown.withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -57,7 +48,7 @@ class HomeScreen extends StatelessWidget {
           child: const Text(
             'אמצו חיית מחמד',
             style: TextStyle(
-              color: Color(0xFF5D4037),
+              color: AppColors.darkBrown,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -65,7 +56,7 @@ class HomeScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 12,
-        shadowColor: darkBrown.withOpacity(0.3),
+        shadowColor: AppColors.darkBrown.withOpacity(0.3),
         leading: const Padding(padding: EdgeInsets.only(left: 12)),
         backgroundColor: Colors.white,
         toolbarHeight: 90,
@@ -81,11 +72,11 @@ class HomeScreen extends StatelessWidget {
               Container(
                   margin: const EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
-                    color: primaryBrown.withOpacity(0.6),
+                    color: AppColors.primaryBrown.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: darkBrown.withOpacity(0.1),
+                        color: AppColors.darkBrown.withOpacity(0.1),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -109,11 +100,11 @@ class HomeScreen extends StatelessWidget {
               : Container(
                   margin: const EdgeInsets.only(right: 16),
                   decoration: BoxDecoration(
-                    color: primaryBrown,
+                    color: AppColors.primaryBrown,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: darkBrown.withOpacity(0.1),
+                        color: AppColors.darkBrown.withOpacity(0.1),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -148,7 +139,7 @@ class HomeScreen extends StatelessWidget {
             end: Alignment.bottomCenter,
             colors: [
               Colors.white.withOpacity(0.8),
-              lightGray,
+              AppColors.lightGray,
             ],
           ),
         ),
@@ -156,21 +147,20 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Welcome header
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.white, lightYellow.withOpacity(0.5)],
+                    colors: [Colors.white, AppColors.lightYellow.withOpacity(0.5)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: darkBrown.withOpacity(0.1),
+                      color: AppColors.darkBrown.withOpacity(0.1),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -181,12 +171,12 @@ class HomeScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: accentYellow.withOpacity(0.2),
+                        color: AppColors.accentYellow.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Icon(
                         Icons.pets,
-                        color: primaryBrown,
+                        color: AppColors.primaryBrown,
                         size: 32,
                       ),
                     ),
@@ -200,7 +190,7 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: darkBrown,
+                              color: AppColors.darkBrown,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -208,7 +198,7 @@ class HomeScreen extends StatelessWidget {
                             'מצאו את החבר הטוב ביותר שלכם',
                             style: TextStyle(
                               fontSize: 14,
-                              color: mediumGray,
+                              color: AppColors.mediumGray,
                             ),
                           ),
                         ],
@@ -218,7 +208,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // Pets grid
               Expanded(
                 child: pets.isEmpty
                     ? _buildEmptyState()
@@ -237,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: darkBrown.withOpacity(0.1),
+                                  color: AppColors.darkBrown.withOpacity(0.1),
                                   blurRadius: 12,
                                   offset: const Offset(0, 6),
                                 ),
@@ -246,9 +235,7 @@ class HomeScreen extends StatelessWidget {
                             child: PetCard(
                               pet: pets[index],
                               onTap: () {
-                                // You can navigate to a details screen or perform any other action here
-                                print('Tapped on pet ${pets[index].name}');
-                                // Navigate to the PetDetailsScreen when the card is tapped
+                                // print('Tapped on pet ${pets[index].name}');
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -273,14 +260,14 @@ class HomeScreen extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [primaryBrown, primaryBrown],
+              colors: [AppColors.primaryBrown, AppColors.primaryBrown],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: darkBrown.withOpacity(0.4),
+                color: AppColors.darkBrown.withOpacity(0.4),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -288,7 +275,7 @@ class HomeScreen extends StatelessWidget {
           ),
           child: FloatingActionButton(
             onPressed: () {
-              // Navigate to the new screen when FAB is clicked.
+              // navigate to the new screen when FAB is clicked.
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AddPetScreen()),
@@ -303,7 +290,7 @@ class HomeScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: accentYellow.withOpacity(0.2),
+                color: AppColors.accentYellow.withOpacity(0.2),
               ),
               padding: const EdgeInsets.all(8),
               child: const Icon(
@@ -317,7 +304,6 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
-      //bottom bar
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -327,7 +313,7 @@ class HomeScreen extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: darkBrown.withOpacity(0.1),
+              color: AppColors.darkBrown.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -337,14 +323,14 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [primaryBrown, darkBrown.withOpacity(0.9)],
+                colors: [AppColors.primaryBrown, AppColors.darkBrown.withOpacity(0.9)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: darkBrown.withOpacity(0.3),
+                  color: AppColors.darkBrown.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 6),
                 ),
@@ -352,7 +338,6 @@ class HomeScreen extends StatelessWidget {
             ),
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to the PetRecommenderScreen when the button is clicked
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -379,7 +364,7 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     child: Icon(
                       Icons.auto_awesome_outlined,
-                      color: accentYellow,
+                      color: AppColors.accentYellow,
                       size: 24,
                     ),
                   ),
@@ -409,7 +394,7 @@ class HomeScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: darkBrown.withOpacity(0.1),
+              color: AppColors.darkBrown.withOpacity(0.1),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -421,13 +406,13 @@ class HomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: lightYellow,
+                color: AppColors.lightYellow,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.pets,
                 size: 64,
-                color: primaryBrown,
+                color: AppColors.primaryBrown,
               ),
             ),
             const SizedBox(height: 20),
@@ -436,7 +421,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: darkBrown,
+                color: AppColors.darkBrown,
               ),
             ),
             const SizedBox(height: 8),
@@ -444,7 +429,7 @@ class HomeScreen extends StatelessWidget {
               'בקרו שוב מאוחר יותר',
               style: TextStyle(
                 fontSize: 16,
-                color: mediumGray,
+                color: AppColors.mediumGray,
               ),
             ),
           ],
@@ -463,12 +448,12 @@ class HomeScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: accentYellow.withOpacity(0.2),
+                  color: AppColors.accentYellow.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.info_outline,
-                  color: accentYellow,
+                  color: AppColors.accentYellow,
                   size: 20,
                 ),
               ),
@@ -492,8 +477,8 @@ class HomeScreen extends StatelessWidget {
         elevation: 12,
         margin: const EdgeInsets.all(16),
         showCloseIcon: true,
-        closeIconColor: accentYellow,
-        backgroundColor: primaryBrown,
+        closeIconColor: AppColors.accentYellow,
+        backgroundColor: AppColors.primaryBrown,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

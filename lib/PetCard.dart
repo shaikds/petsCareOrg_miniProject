@@ -5,21 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'AppColors.dart';
 import 'model/Pet.dart'; // Import the Pet model class
 
 class PetCard extends StatelessWidget {
   final Pet pet;
   final VoidCallback onTap;
-
-  // Enhanced color scheme
-  static const Color primaryBrown = Color(0xFF8D6E63);
-  static const Color lightBrown = Color(0xFFBCAAA4);
-  static const Color darkBrown = Color(0xFF5D4037);
-  static const Color accentYellow = Color(0xFFFFC107);
-  static const Color lightYellow = Color(0xFFFFF8E1);
-  static const Color lightGray = Color(0xFFF5F5F5);
-  static const Color mediumGray = Color(0xFF9E9E9E);
-  static const Color darkGray = Color(0xFF424242);
 
   const PetCard({super.key, required this.pet, required this.onTap});
 
@@ -42,7 +33,7 @@ class PetCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: darkBrown.withOpacity(0.2),
+              color: AppColors.darkBrown.withOpacity(0.2),
               blurRadius: 15,
               offset: const Offset(0, 8),
               spreadRadius: 2,
@@ -123,8 +114,8 @@ class PetCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              accentYellow.withOpacity(0.9),
-                              accentYellow.withOpacity(0.7),
+                              AppColors.accentYellow.withOpacity(0.9),
+                              AppColors.accentYellow.withOpacity(0.7),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(15),
@@ -141,7 +132,7 @@ class PetCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: darkBrown,
+                            color: AppColors.darkBrown,
                           ),
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.center,
@@ -171,19 +162,19 @@ class PetCard extends StatelessWidget {
                             _buildDetailRow(
                               Icons.pets,
                               pet.gender,
-                              primaryBrown,
+                              AppColors.primaryBrown,
                             ),
                             const SizedBox(height: 4),
                             _buildDetailRow(
                               Icons.cake,
                               '${pet.age / 2}',
-                              primaryBrown,
+                              AppColors.primaryBrown,
                             ),
                             const SizedBox(height: 4),
                             _buildDetailRow(
                               Icons.straighten,
                               pet.size,
-                              primaryBrown,
+                              AppColors.primaryBrown,
                             ),
                           ],
                         ),
@@ -201,7 +192,7 @@ class PetCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: accentYellow.withOpacity(0.9),
+                      color: AppColors.accentYellow.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
@@ -213,7 +204,7 @@ class PetCard extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.settings,
-                      color: darkBrown,
+                      color: AppColors.darkBrown,
                       size: 16,
                     ),
                   ),
@@ -232,7 +223,7 @@ class PetCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: lightYellow,
+            color: AppColors.lightYellow,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Icon(
@@ -246,7 +237,7 @@ class PetCard extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              color: darkGray,
+              color: AppColors.darkGray,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),

@@ -1,7 +1,7 @@
 // shows assetimage for 5 seconds, then navigates to AuthGate
 import 'package:flutter/material.dart';
 
-import '../auth_gate.dart';
+import '../AuthGate.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
